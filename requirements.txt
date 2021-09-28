@@ -1,0 +1,4 @@
+functions-framework
+humpday
+scikit-learn>=1.0
+keras-tuner>=1.0
