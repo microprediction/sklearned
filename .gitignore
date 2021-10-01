@@ -27,8 +27,8 @@ share/python-wheels/
 *.egg
 MANIFEST
 
-experiments/surrogate_data
-experiments/untitled_project
+experiments_on_skaters_old_style/surrogate_data
+experiments_on_skaters_old_style/untitled_project
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -130,3 +130,9 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+
+
+
+surrogate_data_cache
+champion_model_metrics
