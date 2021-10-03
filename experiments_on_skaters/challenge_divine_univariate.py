@@ -1,4 +1,4 @@
-from sklearned.skaters.surrogatemodel import challenge
+from sklearned.challenging.surrogatechallenge import challenge
 from tensorflow import  keras
 import os
 
@@ -13,7 +13,7 @@ def build_challenger_model(n_inputs):
     model.add(keras.layers.Dense(16, activation='linear'))
     model.add(keras.layers.Dense(2, activation="linear"))  # selu
     model.add(keras.layers.Dense(1, activation="linear"))
-    optimizer = keras.optimizers.Adagrad(learning_rate=0.005)
+    optimizer = keras.optimizers.RMSprop(learning_rate=0.001)
     model.compile(loss='mse', optimizer=optimizer)
     return model
 
@@ -37,4 +37,4 @@ if __name__=='__main__':
     skater_name = __file__.split(os.path.sep)[-1].replace('challenge_','').replace('.py','')
     print(skater_name)
     model = build_challenger_model(n_inputs=80)
-    challenge(model=model, skater_name=skater_name, epochs=500)
+    challenge(model=model, skater_name=skater_name, epochs=5000, patience=50, jiggle_fraction=0.2)

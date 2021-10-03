@@ -1,4 +1,4 @@
-from sklearned.skaters.surrogatemodel import challenge
+from sklearned.challenging.surrogatechallenge import challenge
 from tensorflow import  keras
 import os
 
