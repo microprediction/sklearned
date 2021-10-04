@@ -17,7 +17,7 @@ POOR_METRICS = {'test_error': DREADFUL,
 
 
 def challenge(model, skater_name: str, epochs=200, jiggle_fraction=0.1, symmetries=None,
-              k=1, n_real=60, n_samples=150, n_warm=100, n_input=80, patience=50):
+              k=1, n_real=60, n_samples=150, n_warm=100, n_input=80, patience=50, with_metrics=False):
     """
            See how a model architecture performs against the champ
 
@@ -81,7 +81,10 @@ def challenge(model, skater_name: str, epochs=200, jiggle_fraction=0.1, symmetri
         save_champion_weights(model=model, skater_name=skater_name, k=k, n_input=n_input)
         save_champion_onnx(model=model, skater_name=skater_name, k=k, n_input=n_input)
 
-    return model
+    if with_metrics:
+        return model, challenger_metrics
+    else:
+        return model
 
 
 if __name__ == '__main__':

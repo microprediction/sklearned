@@ -5,7 +5,21 @@ import os
 
 def build_challenger_model(n_inputs):
     model = keras.Sequential()
-    kernel_initializer_0 = keras.initializers.RandomUniform(minval=0.01, maxval=0.1, seed=None)
+    kernel_initializer_0 = keras.initializers.RandomUniform(minval=0.005, maxval=0.1, seed=None)
+    bias_initializer_0 = keras.initializers.RandomUniform(minval=-0.2, maxval=0.21, seed=None)
+    model.add(keras.layers.Dense(256, activation="linear", input_shape=(1, n_inputs),
+                                 kernel_initializer=kernel_initializer_0,
+                                 bias_initializer=bias_initializer_0))
+    model.add(keras.layers.Dense(16, activation='linear'))
+    model.add(keras.layers.Dense(2, activation="linear"))  # selu
+    model.add(keras.layers.Dense(1, activation="linear"))
+    optimizer = keras.optimizers.RMSprop(learning_rate=0.001)
+    model.compile(loss='mse', optimizer=optimizer)
+    return model
+
+champ = """def build_challenger_model(n_inputs):
+    model = keras.Sequential()
+    kernel_initializer_0 = keras.initializers.RandomUniform(minval=0.005, maxval=0.1, seed=None)
     bias_initializer_0 = keras.initializers.RandomUniform(minval=-0.2, maxval=0.21, seed=None)
     model.add(keras.layers.Dense(80, activation="linear", input_shape=(1, n_inputs),
                                  kernel_initializer=kernel_initializer_0,
@@ -15,7 +29,7 @@ def build_challenger_model(n_inputs):
     model.add(keras.layers.Dense(1, activation="linear"))
     optimizer = keras.optimizers.RMSprop(learning_rate=0.001)
     model.compile(loss='mse', optimizer=optimizer)
-    return model
+    return model"""
 
 
 if __name__=='__main__':

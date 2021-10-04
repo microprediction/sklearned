@@ -13,7 +13,7 @@ def build_challenger_model(n_inputs):
     model.add(keras.layers.Dense(16, activation='linear'))
     model.add(keras.layers.Dense(2, activation="tanh"))  # selu
     model.add(keras.layers.Dense(1, activation="linear"))
-    optimizer = keras.optimizers.Adagrad(learning_rate=0.005)
+    optimizer = keras.optimizers.RMSprop(learning_rate=0.001)
     model.compile(loss='mse', optimizer=optimizer)
     return model
 
