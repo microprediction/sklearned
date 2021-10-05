@@ -17,7 +17,7 @@ POOR_METRICS = {'test_error': DREADFUL,
 
 
 def challenge(model, skater_name: str, epochs=200, jiggle_fraction=0.1, symmetries=None,
-              k=1, n_real=60, n_samples=150, n_warm=100, n_input=80, patience=50, with_metrics=False):
+              k=1, n_real=60, n_samples=150, n_warm=100, n_input=80, patience=50, with_metrics=False, verbose=2):
     """
            See how a model architecture performs against the champ
 
@@ -52,7 +52,7 @@ def challenge(model, skater_name: str, epochs=200, jiggle_fraction=0.1, symmetri
 
     print('Training')
     callback = keras.callbacks.EarlyStopping(monitor='loss', patience=patience)
-    model.fit(x=jiggle_X, y=aug_y, epochs=epochs, verbose=1, callbacks=[callback])
+    model.fit(x=jiggle_X, y=aug_y, epochs=epochs, verbose=verbose, callbacks=[callback])
 
     y_test_hat = model.predict(d['x_test'])
     test_error = float(keras.metrics.mean_squared_error(y_test_hat[:, 0, 0], d['y_test'][:, 0]))
@@ -82,7 +82,7 @@ def challenge(model, skater_name: str, epochs=200, jiggle_fraction=0.1, symmetri
         save_champion_onnx(model=model, skater_name=skater_name, k=k, n_input=n_input)
 
     if with_metrics:
-        return model, challenger_metrics
+        return model, challenger_metrics, test_error_ratio
     else:
         return model
 

@@ -1,7 +1,7 @@
 import math
 from typing import Union, Tuple, List
 BOUNDS_TYPE = List[Union[Tuple, List]]  # scipy.optimize style bounds [ (low,high), (low, high),... ]
-
+import numpy as np
 
 # Misc mappings that might be useful
 
@@ -42,3 +42,16 @@ def to_log_space_1d(u, low, high):
         else:
             u3 = (u - 0.525) / 0.525
             return positive_log_scale(u3, low=scale, high=high)
+
+
+def choice_from_dict(u:float, weighting:dict):
+    """ Maps [0,1] into categorical or ordinal choice
+    :param u:
+    :param weighting:   {k: w} choices and weights
+    :return:
+    """
+    a_tuples = [(k,v) for k,v in weighting.items()]
+    a_sum = np.cumsum([t[1] for t in a_tuples])
+    u_scaled = a_sum[-1]*u
+    choice = [ t[0] for t,cumulative in zip(a_tuples,a_sum) if u_scaled<=cumulative][0]
+    return choice
