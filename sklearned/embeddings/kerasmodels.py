@@ -3,20 +3,22 @@
 from sklearned.embeddings.transforms import to_log_space_1d, choice_from_dict
 from tensorflow import keras
 from sklearned.embeddings.activationembeddings import mostly_linear
-from sklearned.embeddings.optimizerembeddings import keras_optimizer
+from sklearned.embeddings.optimizerembeddings import keras_optimizer_from_name, keras_optimizer_name
 from sklearned.embeddings.lossembeddings import mostly_mse
 
 
 def keras_mostly_linear_27(us, n_inputs:int):
     """ Maps cube onto model and search params """
-    search_params = {'epochs':int(to_log_space_1d(us[0], low=50, high=1000)),
-                     'patience':int(to_log_space_1d(us[1], low=5, high=50)),
+    search_params = {'epochs':int(to_log_space_1d(us[0], low=50, high=5000)),
+                     'patience':int(to_log_space_1d(us[1], low=5, high=150)),
                      'jiggle_fraction':us[2]}
 
     n_search_params = len(search_params)
     n_layers = choice_from_dict(us[n_search_params], {1:5, 2: 10, 3: 20, 4: 5, 5: 5})
     learning_rate = to_log_space_1d( us[n_search_params+1], low=0.00001, high=0.1)
-    optimizer = keras_optimizer(us[n_search_params + 2], learning_rate=learning_rate)
+    opt_name = keras_optimizer_name(us[n_search_params + 2])
+    keras_optimizer = keras_optimizer_from_name(opt_name=opt_name, learning_rate=learning_rate)
+    info = {'keras_optimizer':opt_name,'learning_rate':learning_rate}
     loss = mostly_mse( us[n_search_params + 3])
     offset = n_search_params+4
 
@@ -32,8 +34,8 @@ def keras_mostly_linear_27(us, n_inputs:int):
                                      kernel_initializer=kernel_initializer_0,
                                      bias_initializer=bias_initializer_0))
     model.add(keras.layers.Dense(1,activation='linear'))
-    model.compile(loss=loss, optimizer=optimizer)
-    return model, search_params
+    model.compile(loss=loss, optimizer=keras_optimizer)
+    return model, search_params, info
 
 
 def keras_linear(us, n_inputs:int):
@@ -41,7 +43,7 @@ def keras_linear(us, n_inputs:int):
     max_kernel = us[0] + us[1] + 0.001
     bias_size = us[2]
     layers_0 = int( to_log_space_1d( us[3], low=8, high=128 ) )
-    layers_1 = int( to_log_space_1d( us[4], low=2, high=32) )
+    layers_1 = int( to_log_space_1d( us[4], low=2, high=128) )
     layers_2 = int( to_log_space_1d( us[5], low=2, high=16) )
     learning_rate = to_log_space_1d( us[6], low=0.00001, high=0.05)
     epochs = int( to_log_space_1d( us[7], low=50, high=1000 ))  # 5000

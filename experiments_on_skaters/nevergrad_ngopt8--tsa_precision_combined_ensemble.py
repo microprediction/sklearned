@@ -10,5 +10,5 @@ if __name__=='__main__':
     skater_name = this_file.split('--')[1].replace('.py', '')
     k = 1
     n_input = 80
-    n_trials = 1500
+    n_trials = 5000
     pprint(humpday_challenge_fixed_example(optimizer=optimizer, skater_name=skater_name, k=1, n_input=n_input, n_trials =n_trials))

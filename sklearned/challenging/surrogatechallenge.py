@@ -2,11 +2,12 @@ import numpy as np
 from tensorflow import keras
 from sklearned.challenging.surrogatedata import cached_skater_surrogate_data
 from sklearned.augment.affine import affine, jiggle
-from sklearned.challenging.surrogateio import read_model_champion_metrics, save_champion_metrics, save_champion_model, save_champion_onnx, save_champion_weights
+from sklearned.challenging.surrogateio import read_model_champion_metrics, save_champion_metrics, save_champion_model,\
+    save_champion_onnx, save_champion_weights, save_champion_info
 from pprint import pprint
 import os
-from sklearned.wherami import CHAMPION_METRICS_PATH, CHAMPION_MODELS_PATH, CHAMPION_WEIGHTS_PATH, CHAMPION_ONNX_PATH
-
+from sklearned.wherami import CHAMPION_METRICS_PATH, CHAMPION_MODELS_PATH, CHAMPION_WEIGHTS_PATH, CHAMPION_ONNX_PATH, CHAMPION_INFO_PATH
+from sklearned.augment.cleaning import remove_surrogate_outliers
 
 # Utilities belonging elsewhere
 
@@ -16,13 +17,14 @@ POOR_METRICS = {'test_error': DREADFUL,
                 'val_error': DREADFUL}
 
 
-def challenge(model, skater_name: str, epochs=200, jiggle_fraction=0.1, symmetries=None,
+def challenge(model, skater_name: str, info:dict, epochs=200, jiggle_fraction=0.1, symmetries=None,
               k=1, n_real=60, n_samples=150, n_warm=100, n_input=80, patience=50, with_metrics=False, verbose=2):
     """
            See how a model architecture performs against the champ
 
     :param model:
     :param skater_name:        tsa_p2_d0_q0 or similar
+    :param info                dict of stuff to save if challenge is successful
     :param epochs:             Maximum number of training epochs
     :param jiggle_fraction:    Fraction of data points in first half of time-series to jiggle
     :param symmetries:         List of implied symmetries (translations, if scalar)
@@ -32,19 +34,27 @@ def challenge(model, skater_name: str, epochs=200, jiggle_fraction=0.1, symmetri
     :param n_warm              Length of history used in warm-up
     :param n_input             Number of lags to use (length of input vector to neural network model)
     :param patience            Keras early stopping patience parameter
+    :param search_params       dict that will be saved if the challenge is successful
     :return:
     """
+    search_params = {'epochs':epochs,
+                     'patience':patience,
+                     'jiggle_fraction':jiggle_fraction}
+    info.update(search_params)
+
     os.makedirs(CHAMPION_METRICS_PATH, exist_ok=True)
     os.makedirs(CHAMPION_MODELS_PATH, exist_ok=True)
     os.makedirs(CHAMPION_WEIGHTS_PATH, exist_ok=True)
     os.makedirs(CHAMPION_ONNX_PATH, exist_ok=True)
+    os.makedirs(CHAMPION_INFO_PATH, exist_ok=True)
 
     print('Champion data')
     champion_metrics = read_model_champion_metrics(skater_name=skater_name, k=k, n_input=n_input)
     pprint(champion_metrics)
 
     print('Surrogate data ')
-    d = cached_skater_surrogate_data(skater_name=skater_name, k=1, n_samples=150, n_warm=290, n_input=80)
+    d = cached_skater_surrogate_data(skater_name=skater_name, k=k, n_samples=150, n_warm=290, n_input=n_input)
+    d = remove_surrogate_outliers(d)
     if symmetries is None:
         symmetries = [0.95, 0.975, 0.99, 1.0, 1.01, 1.025, 1.05]
     aug_X, aug_y = affine(X=d['x_train'], y=d['y_train'], s=symmetries)
@@ -75,11 +85,12 @@ def challenge(model, skater_name: str, epochs=200, jiggle_fraction=0.1, symmetri
     pprint(challenger_metrics)
     pprint('Test error ratio to champion is ' + str(test_error_ratio))
     if test_error_ratio < 0.95:
-        print('You won the challenge ... saving new champion metrics')
+        print('You won the challenge ... saving new champion metrics, model, weights, onnx and search params')
         save_champion_metrics(metrics=challenger_metrics, skater_name=skater_name, k=k, n_input=n_input)
         save_champion_model(model=model, skater_name=skater_name, k=k, n_input=n_input)
         save_champion_weights(model=model, skater_name=skater_name, k=k, n_input=n_input)
         save_champion_onnx(model=model, skater_name=skater_name, k=k, n_input=n_input)
+        save_champion_info(info=info, skater_name=skater_name, k=k, n_input=n_input)
 
     if with_metrics:
         return model, challenger_metrics, test_error_ratio

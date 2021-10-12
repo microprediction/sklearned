@@ -14,4 +14,4 @@ if __name__=='__main__':
     k = 1
     n_input = 80
     n_trials = 1500
-    pprint(humpday_challenge(optimizer=optimizer, embedding_name=embedding, skater_name=skater_name, k=1, n_input=n_input, n_trials =n_trials))
+    pprint(humpday_challenge(global_optimizer=optimizer, embedding_name=embedding, skater_name=skater_name, k=1, n_input=n_input, n_trials =n_trials))

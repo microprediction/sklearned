@@ -3,14 +3,14 @@ from sklearned.embeddings.transforms import choice_from_dict
 
 
 MOSTLY_LINEAR = {'linear' :20,
-               'relu' :5,
+               'relu' :20,
                'gelu' :5,
                'hard_sigmoid' :3,
                'sigmoid' :3,
                'softmax' :3,
                'softplus' :3,
                'softsign' :2,
-               'swish' :2,
+               'swish' :20,
                'tanh' :2,
                'exponential' :1}
 

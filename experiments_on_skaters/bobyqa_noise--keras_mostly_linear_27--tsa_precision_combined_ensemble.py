@@ -13,7 +13,7 @@ if __name__=='__main__':
     k = 1
     n_input = 80
     n_trials = 50
-    best_test, best_model, best_search_params = humpday_challenge(optimizer=optimizer, embedding_name=embedding_name, skater_name=skater_name, k=1, n_input=n_input, n_trials =n_trials)
+    best_test, best_model, best_search_params = humpday_challenge(global_optimizer=optimizer, embedding_name=embedding_name, skater_name=skater_name, k=1, n_input=n_input, n_trials =n_trials)
     print(best_test)
     print(best_model.summary())
     pprint(best_search_params)

@@ -7,4 +7,4 @@
 
 Add multiply layers 
 - https://keras.io/api/layers/merging_layers/multiply/
--https://stackoverflow.com/questions/48309322/keras-multiply-layer-in-functional-api
+- https://stackoverflow.com/questions/48309322/keras-multiply-layer-in-functional-api

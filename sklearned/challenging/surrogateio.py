@@ -1,5 +1,5 @@
 import os
-from sklearned.wherami import CHAMPION_METRICS_PATH, CHAMPION_MODELS_PATH, CHAMPION_WEIGHTS_PATH, CHAMPION_ONNX_PATH
+from sklearned.wherami import CHAMPION_METRICS_PATH, CHAMPION_MODELS_PATH, CHAMPION_WEIGHTS_PATH, CHAMPION_ONNX_PATH, CHAMPION_INFO_PATH
 from tf2onnx.keras2onnx_api import convert_keras
 import json
 # Utilities belonging elsewhere
@@ -30,6 +30,10 @@ def champion_onnx_file(skater_name, k: int, n_input: int):
     return CHAMPION_ONNX_PATH + os.path.sep + champion_stem(skater_name=skater_name, k=k, n_input=n_input) + '.onnx'
 
 
+def champion_info_file(skater_name, k: int, n_input: int):
+    return CHAMPION_INFO_PATH + os.path.sep + champion_stem(skater_name=skater_name, k=k, n_input=n_input) + '.json'
+
+
 def read_model_champion_metrics(**kwargs):
     try:
         with open(champion_metrics_file(**kwargs), 'r') as fp:
@@ -49,6 +53,11 @@ def save_champion_model(model, **kwargs):
     mf = champion_model_file(**kwargs)
     with open(mf, 'w') as fp:
         fp.write(model_as_json)
+
+
+def save_champion_info(info, **kwargs):
+    with open(champion_info_file(**kwargs), 'w') as fp:
+        json.dump(info, fp)
 
 
 def save_champion_weights(model, **kwargs):
