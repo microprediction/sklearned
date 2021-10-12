@@ -13,7 +13,7 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/microprediction/sklearned",
     author="microprediction",
-    author_email="pcotton@intechinvestments.com",
+    author_email="peter.cotton@microprediction.com",
     license="MIT",
     classifiers=[
         "License :: OSI Approved :: MIT License",
