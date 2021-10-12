@@ -8,7 +8,7 @@ README = (HERE / "README.md").read_text()
 setup(
     name="sklearned",
     version="0.0.1",
-    description="Surrogates for sklearn fit and predict",
+    description="Surrogates",
     long_description=README,
     long_description_content_type="text/markdown",
     url="https://github.com/microprediction/sklearned",
