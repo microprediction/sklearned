@@ -1,9 +1,14 @@
 
+Model search
+
 - https://github.com/ilija139/HORD
 - https://github.com/google/model_search
 - https://github.com/cerlymarco/keras-hypetune
 - https://github.com/Minyus/optkeras
 - https://github.com/Octavian-ai/reasoning-operations
+
+Keras model ideas
+-https://github.com/makaveli10/StockPrediction_Transformer/blob/master/IntraDayStockPrediction.ipynb
 
 Add multiply layers 
 - https://keras.io/api/layers/merging_layers/multiply/
