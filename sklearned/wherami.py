@@ -8,6 +8,7 @@ CHAMPION_WEIGHTS_PATH = ROOT_PATH + os.path.sep + 'champion_weights'
 CHAMPION_ONNX_PATH = ROOT_PATH + os.path.sep + 'champion_onnx'
 SURROGATE_DATA_CACHE = ROOT_PATH + os.path.sep + 'surrogate_data_cache'
 CHAMPION_INFO_PATH = ROOT_PATH + os.path.sep + 'champion_info'
+CHAMPION_TENSORFLOW_PATH = ROOT_PATH + os.path.sep + 'champion_tensorflow'
 
 LIVE_DATA_CACHE = ROOT_PATH + os.path.sep + 'live_data_cache'
 

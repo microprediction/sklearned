@@ -3,7 +3,7 @@ from tensorflow import keras
 from sklearned.challenging.surrogatedata import cached_skater_surrogate_data
 from sklearned.augment.affine import affine, jiggle
 from sklearned.challenging.surrogateio import read_model_champion_metrics, save_champion_metrics, save_champion_model,\
-    save_champion_onnx, save_champion_weights, save_champion_info
+    save_champion_onnx, save_champion_weights, save_champion_info, save_champion_tensorflow
 from pprint import pprint
 import os
 from sklearned.wherami import CHAMPION_METRICS_PATH, CHAMPION_MODELS_PATH, CHAMPION_WEIGHTS_PATH, CHAMPION_ONNX_PATH, CHAMPION_INFO_PATH
@@ -91,6 +91,7 @@ def challenge(model, skater_name: str, info:dict, epochs=200, jiggle_fraction=0.
         save_champion_weights(model=model, skater_name=skater_name, k=k, n_input=n_input)
         save_champion_onnx(model=model, skater_name=skater_name, k=k, n_input=n_input)
         save_champion_info(info=info, skater_name=skater_name, k=k, n_input=n_input)
+        save_champion_tensorflow(model=model, skater_name=skater_name,k=k,n_input=n_input)
 
     if with_metrics:
         return model, challenger_metrics, test_error_ratio
