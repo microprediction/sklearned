@@ -1,0 +1,1 @@
+{"keras_optimizer": "RMSprop", "learning_rate": 1.992025159215589e-05, "global_optimizer": "nevergrad_oneplus_cube", "embedding_name": "keras_mostly_linear_27", "epochs": 90, "patience": 12, "jiggle_fraction": 0.10824962959501735}
