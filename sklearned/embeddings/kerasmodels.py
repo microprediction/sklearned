@@ -66,6 +66,30 @@ def keras_deep_swish_28(us, n_inputs:int):
     return model, search_params, info
 
 
+def keras_deeper_swish_17(us, n_inputs:int):
+    """ Maps cube onto model and search params """
+    search_params = {'epochs':int(to_log_space_1d(us[0], low=50, high=20000)),
+                     'patience':int(to_log_space_1d(us[1], low=5, high=500)),
+                     'jiggle_fraction':us[2]**2}
+
+    n_search_params = len(search_params)
+    n_layers = choice_from_dict(us[n_search_params], {5: 10, 6:10, 7:10, 8:10, 9:10, 10:10 })
+    learning_rate = to_log_space_1d( us[n_search_params+1], low=0.000001, high=0.001)
+    opt_name = keras_optimizer_name(us[n_search_params + 2])
+    keras_optimizer = keras_optimizer_from_name(opt_name=opt_name, learning_rate=learning_rate)
+    info = {'keras_optimizer':opt_name,'learning_rate':learning_rate}
+    loss = mostly_mse( us[n_search_params + 3])
+    offset = n_search_params+4
+
+    model = keras.Sequential()
+    for layer_ndx in range(n_layers):
+        n_units = int(to_log_space_1d(us[1*layer_ndx+offset], low=2, high=128))
+        model.add(keras.layers.Dense(n_units, input_shape=(1, n_inputs)))
+    model.add(keras.layers.Dense(1,activation='linear'))
+    model.compile(loss=loss, optimizer=keras_optimizer)
+    return model, search_params, info
+
+
 def keras_linear(us, n_inputs:int):
     min_kernel = us[0]
     max_kernel = us[0] + us[1] + 0.001
@@ -101,4 +125,4 @@ def keras_linear(us, n_inputs:int):
     return model, search_params
 
 
-KERAS_EMBEDDINGS = [keras_linear, keras_mostly_linear_27, keras_deep_swish_28]
+KERAS_EMBEDDINGS = [keras_linear, keras_mostly_linear_27, keras_deep_swish_28, keras_deeper_swish_17]
