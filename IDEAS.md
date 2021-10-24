@@ -8,7 +8,9 @@ Model search
 - https://github.com/Octavian-ai/reasoning-operations
 
 Keras model ideas
+
 -https://github.com/makaveli10/StockPrediction_Transformer/blob/master/IntraDayStockPrediction.ipynb
+-https://towardsdatascience.com/using-lstms-to-forecast-time-series-4ab688386b1f
 
 Add multiply layers 
 - https://keras.io/api/layers/merging_layers/multiply/
