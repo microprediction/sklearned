@@ -25,9 +25,9 @@ def keras_mostly_linear_27(us, n_inputs:int):
     model = keras.Sequential()
     for layer_ndx in range(n_layers):
         n_units = int(to_log_space_1d(us[4*layer_ndx+offset], low=2, high=128))
-        activation = mostly_linear( us[4*layer_ndx+offset] )
-        kernel_size = us[4*layer_ndx+offset]
-        bias_size = us[4 * layer_ndx + offset]
+        activation = mostly_linear( us[4*layer_ndx+offset+1] )
+        kernel_size = us[4*layer_ndx+offset+2]
+        bias_size = us[4 * layer_ndx + offset+3]
         kernel_initializer_0 = keras.initializers.RandomUniform(minval=-kernel_size, maxval=kernel_size, seed=None)
         bias_initializer_0 = keras.initializers.RandomUniform(minval=-bias_size, maxval=bias_size, seed=None)
         model.add(keras.layers.Dense(n_units, activation=activation, input_shape=(1, n_inputs),
