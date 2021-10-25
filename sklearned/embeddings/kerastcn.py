@@ -1,22 +1,25 @@
 
 from sklearned.embeddings.transforms import to_log_space_1d, choice_from_dict
 from tensorflow import keras
-from sklearned.embeddings.activationembeddings import mostly_linear, mostly_swish
 from sklearned.embeddings.optimizerembeddings import keras_optimizer_from_name, keras_optimizer_name
 from sklearned.embeddings.lossembeddings import mostly_mse
+from tcn import TCN
+# be aware of https://github.com/philipperemy/keras-tcn/issues/211
 
 
-def keras_tcn_shallow_11(us, n_inputs:int):
-    layer_choices = {1: 30, 2:20}
-    return keras_tcn_factory(us=us,n_inputs=n_inputs, layer_choices=layer_choices, units_low=2, units_high=6)
+
+def keras_tcn_shallow_10(us, n_inputs:int):
+    layer_choices = {1: 30}
+    return keras_tcn_factory(us=us,n_inputs=n_inputs, layer_choices=layer_choices, filters_low=4, filters_high=64)
 
 
-def keras_lstm_deep_14(us, n_inputs:int):
-    layer_choices = {3:10, 4:5, 5:2}
-    return keras_tcn_factory(us=us,n_inputs=n_inputs, layer_choices=layer_choices, units_low=2, units_high=32)
+def keras_tcn_deep_14(us, n_inputs:int):
+    layer_choices = {2: 30, 3:10, 4:5}
+    return keras_tcn_factory(us=us,n_inputs=n_inputs, layer_choices=layer_choices, filters_low=2, filters_high=16)
 
 
-def keras_tcn_factory(us, n_inputs:int, layer_choices:dict, units_low=4, units_high=128):
+
+def keras_tcn_factory(us, n_inputs:int, layer_choices:dict, filters_low:int, filters_high:int):
     """ Maps cube onto model and search params """
     search_params = {'epochs':int(to_log_space_1d(us[0], low=5, high=5000)),
                      'patience':int(to_log_space_1d(us[1], low=1, high=10)),
@@ -38,19 +41,21 @@ def keras_tcn_factory(us, n_inputs:int, layer_choices:dict, units_low=4, units_h
 
     # n_inputs = timesteps
     layer_ndx = 0
-    n_units = int(to_log_space_1d(us[1 * layer_ndx + offset], low=units_low, high=units_high))
-    model.add(keras.layers.LSTM(units=n_units, input_shape=(1,n_inputs), return_sequences=True))
-    model.add(keras.layers.Dropout(dropout_rate))
+    return_sequences = n_tcn_layers>1
+    n_filters = int(to_log_space_1d(us[1 * layer_ndx + offset], low=filters_low, high=filters_high))
+    model.add(TCN(input_shape=(n_inputs,1), nb_filters=n_filters, dropout_rate=dropout_rate,return_sequences=return_sequences))
 
-    # Intermediate layers
     for layer_ndx in range(1,n_tcn_layers-1):
-        n_units = int(to_log_space_1d(us[1*layer_ndx+offset], low=units_low, high=units_high))
-        model.add(keras.layers.LSTM(units=n_units, return_sequences=True))
-        model.add(keras.layers.Dropout(dropout_rate))
-    # Last layer
-    layer_ndx = n_tcn_layers
-    n_units = int(to_log_space_1d(us[1 * layer_ndx + offset], low=units_low, high=units_high))
-    model.add(keras.layers.LSTM(units=n_units, return_sequences=False))
+        return_sequences = True
+        n_filters = int(to_log_space_1d(us[1 * layer_ndx + offset], low=filters_low, high=filters_high))
+        model.add(TCN(nb_filters=n_filters, dropout_rate=dropout_rate, return_sequences=return_sequences))
+
+    if n_tcn_layers>1:
+        layer_ndx = 1
+        return_sequences = False
+        n_filters = int(to_log_space_1d(us[1 * layer_ndx + offset], low=filters_low, high=filters_high))
+        model.add(TCN(nb_filters=n_filters, dropout_rate=dropout_rate,
+                      return_sequences=return_sequences))
 
     # Dense
     model.add(keras.layers.Dense(1,activation='linear'))
@@ -59,14 +64,14 @@ def keras_tcn_factory(us, n_inputs:int, layer_choices:dict, units_low=4, units_h
     model.compile(loss=loss, optimizer=keras_optimizer)
     return model, search_params, info
 
-KERAS_TCN_MODELS = [keras_tcn_shallow_11]
+KERAS_TCN_MODELS = [keras_tcn_shallow_10]
 
 
 if __name__=='__main__':
     import numpy as np
     for _ in range(20):
         x = np.random.randn(1000,1,20)
-        model, search_params, info = keras_tcn_shallow_11(us=list(np.random.rand(11,1)),n_inputs=20)
+        model, search_params, info = keras_tcn_shallow_10(us=list(np.random.rand(10,1)),n_inputs=20)
         print(model.summary())
         y = model(x)
         print(np.shape(y))
