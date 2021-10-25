@@ -38,10 +38,10 @@ def keras_mostly_linear_27(us, n_inputs:int):
     return model, search_params, info
 
 
-def keras_deep_swish_28(us, n_inputs:int):
+def keras_fast_swish_28(us, n_inputs:int):
     """ Maps cube onto model and search params """
-    search_params = {'epochs':int(to_log_space_1d(us[0], low=50, high=10000)),
-                     'patience':int(to_log_space_1d(us[1], low=5, high=150)),
+    search_params = {'epochs':int(to_log_space_1d(us[0], low=50, high=500)),
+                     'patience':int(to_log_space_1d(us[1], low=2, high=10)),
                      'jiggle_fraction':us[2]**2}
 
     n_search_params = len(search_params)
@@ -56,14 +56,17 @@ def keras_deep_swish_28(us, n_inputs:int):
     model = keras.Sequential()
     for layer_ndx in range(n_layers):
         n_units = int(to_log_space_1d(us[3*layer_ndx+offset], low=2, high=128))
-        activation = mostly_swish( us[3*layer_ndx+offset] )
-        kernel_size = us[3*layer_ndx+offset]
+        activation = mostly_swish( us[3*layer_ndx+offset+1] )
+        kernel_size = us[3*layer_ndx+offset+2]
         kernel_initializer_0 = keras.initializers.RandomUniform(minval=-kernel_size, maxval=kernel_size, seed=None)
         model.add(keras.layers.Dense(n_units, activation=activation, input_shape=(1, n_inputs),
                                      kernel_initializer=kernel_initializer_0))
+        model.add(keras.layers.Dropout(0.05))
     model.add(keras.layers.Dense(1,activation='linear'))
     model.compile(loss=loss, optimizer=keras_optimizer)
     return model, search_params, info
+
+
 
 
 def keras_deeper_swish_17(us, n_inputs:int):
@@ -85,6 +88,7 @@ def keras_deeper_swish_17(us, n_inputs:int):
     for layer_ndx in range(n_layers):
         n_units = int(to_log_space_1d(us[1*layer_ndx+offset], low=2, high=128))
         model.add(keras.layers.Dense(n_units, input_shape=(1, n_inputs)))
+        model.add(keras.layers.Dropout(0.1))
     model.add(keras.layers.Dense(1,activation='linear'))
     model.compile(loss=loss, optimizer=keras_optimizer)
     return model, search_params, info
@@ -125,4 +129,7 @@ def keras_linear(us, n_inputs:int):
     return model, search_params
 
 
-KERAS_EMBEDDINGS = [keras_linear, keras_mostly_linear_27, keras_deep_swish_28, keras_deeper_swish_17]
+
+
+
+KERAS_EMBEDDINGS = [keras_linear, keras_mostly_linear_27, keras_fast_swish_28, keras_deeper_swish_17]
