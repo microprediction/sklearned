@@ -8,6 +8,7 @@ from pprint import pprint
 import os
 from sklearned.wherami import CHAMPION_METRICS_PATH, CHAMPION_MODELS_PATH, CHAMPION_WEIGHTS_PATH, CHAMPION_ONNX_PATH, CHAMPION_INFO_PATH
 from sklearned.augment.cleaning import remove_surrogate_outliers
+from sklearned.challenging.dimensional import squeeze_out_middle
 
 # Utilities belonging elsewhere
 
@@ -64,15 +65,15 @@ def challenge(model, skater_name: str, info:dict, epochs=200, jiggle_fraction=0.
     callback = keras.callbacks.EarlyStopping(monitor='loss', patience=patience)
     model.fit(x=jiggle_X, y=aug_y, epochs=epochs, verbose=verbose, callbacks=[callback])
 
-    y_test_hat = model.predict(d['x_test'])
-    test_error = float(keras.metrics.mean_squared_error(y_test_hat[:, 0, 0], d['y_test'][:, 0]))
-    y_val_hat = model.predict(d['x_val'])
-    val_error = float(keras.metrics.mean_squared_error(y_val_hat[:, 0, 0], d['y_val'][:, 0]))
-    y_train_hat = model.predict(d['x_train'])
-    train_error = float(keras.metrics.mean_squared_error(y_train_hat[:, 0, 0], d['y_train'][:, 0]))
+    y_test_hat = squeeze_out_middle( model(d['x_test']) )
+    test_error = float(keras.metrics.mean_squared_error(y_test_hat[:, 0], d['y_test'][:, 0]))
+    y_val_hat = squeeze_out_middle( model(d['x_val']) )
+    val_error = float(keras.metrics.mean_squared_error(y_val_hat[:, 0], d['y_val'][:, 0]))
+    y_train_hat = squeeze_out_middle(model(d['x_train']))
+    train_error = float(keras.metrics.mean_squared_error(y_train_hat[:, 0], d['y_train'][:, 0]))
 
     # Innovations relative to last value
-    dy_surrogate = list(y_test_hat[:, 0, 0] - d['x_test'][:, 0, -1])
+    dy_surrogate = list(y_test_hat[:, 0] - d['x_test'][:, 0, -1])
     dy_model = list(d['y_test'][:, 0] - d['x_test'][:, 0, -1])
     rho = np.corrcoef(x=dy_surrogate, y=dy_model)[0][1]
 

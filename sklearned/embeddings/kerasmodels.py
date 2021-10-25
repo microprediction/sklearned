@@ -133,3 +133,12 @@ def keras_linear(us, n_inputs:int):
 
 
 KERAS_EMBEDDINGS = [keras_linear, keras_mostly_linear_27, keras_fast_swish_28, keras_deeper_swish_17]
+
+
+if __name__=='__main__':
+    import numpy as np
+    x = np.random.randn(1000,1,160)
+    model, search_params, info = keras_fast_swish_28(us=list(np.random.rand(28,1)),n_inputs=160)
+    print(model.summary())
+    y = model(x)
+    print(np.shape(y))
