@@ -18,6 +18,8 @@ def humpday_challenge(global_optimizer, embedding_name:str, skater_name: str, k:
 
     n_dim = int( embedding_name.split('_')[-1])
     embedding = embedding_from_name(embedding_name)
+    if embedding is None:
+        raise Exception('Could not instanstiate '+embedding_name)
 
     def objective(us: [float]) -> float:
         model, user_search_params, info = embedding(us, n_input)
