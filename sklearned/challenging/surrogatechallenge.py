@@ -63,7 +63,7 @@ def challenge(model, skater_name: str, info:dict, epochs=200, jiggle_fraction=0.
 
     print('Training')
     callback = keras.callbacks.EarlyStopping(monitor='loss', patience=patience)
-    model.fit(x=jiggle_X, y=aug_y, epochs=epochs, verbose=verbose, callbacks=[callback])
+    model.fit(x=jiggle_X, y=aug_y, epochs=epochs, verbose=verbose, callbacks=[callback], use_multiprocessing=False, workers=1)
 
     y_test_hat = squeeze_out_middle( model(d['x_test']) )
     test_error = float(keras.metrics.mean_squared_error(y_test_hat[:, 0], d['y_test'][:, 0]))

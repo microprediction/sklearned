@@ -7,6 +7,70 @@ from sklearned.embeddings.optimizerembeddings import keras_optimizer_from_name, 
 from sklearned.embeddings.lossembeddings import mostly_mse
 
 
+def keras_jiggly_7(us,n_inputs:int):
+    search_params = {'epochs': 500,
+                     'patience': 6,
+                     'jiggle_fraction': 0.5}
+    learning_rate = to_log_space_1d(us[0],low=0.0001,high=0.001)
+    info = {'keras_optimizer':"Adamax",'learning_rate':learning_rate}
+    loss = 'mse'
+    unit0 = int(to_log_space_1d(us[1],low=1.5,high=20))
+    unts = [unit0,5,3,5,16,1]
+    activs = ['linear','relu','relu','gelu','swish','linear']
+    model = keras.Sequential()
+    keras_optimizer = keras_optimizer_from_name('Adamax', learning_rate=info['learning_rate'])
+
+    for layer_ndx,(n_units,activation) in enumerate(zip(unts,activs)):
+        if layer_ndx==len(unts)-1:
+            # Last layer
+            model.add(keras.layers.Dense(1))
+        else:
+            bias_size = us[layer_ndx + 2]
+            bias_initializer_0 = keras.initializers.RandomUniform(minval=-bias_size, maxval=bias_size, seed=None)
+            if layer_ndx==0:
+                model.add(keras.layers.Dense(n_units, activation=activation, input_shape = (1,n_inputs),
+                                             bias_initializer=bias_initializer_0))
+            else:
+                model.add(keras.layers.Dense(n_units, activation=activation,
+                                             bias_initializer=bias_initializer_0))
+    model.compile(loss=loss, optimizer=keras_optimizer)
+    return model, search_params, info
+
+
+def keras_jiggly_10(us,n_inputs:int):
+    search_params = {'epochs': 5000,
+                     'patience': 6,
+                     'jiggle_fraction': 0.5}
+    info = {'keras_optimizer':"Adamax",'learning_rate':0.000345}
+    loss = 'mse'
+    unts = [2,5,3,5,16,1]
+    activs = ['linear','relu','relu','gelu','swish','linear']
+    model = keras.Sequential()
+    keras_optimizer = keras_optimizer_from_name('Adamax', learning_rate=info['learning_rate'])
+
+    for layer_ndx,(n_units,activation) in enumerate(zip(unts,activs)):
+        if layer_ndx==len(unts)-1:
+            # Last layer
+            model.add(keras.layers.Dense(1))
+        else:
+            kernel_size = us[2 * layer_ndx]
+            bias_size = us[2 * layer_ndx + 1]
+            kernel_initializer_0 = keras.initializers.RandomUniform(minval=-kernel_size, maxval=kernel_size, seed=None)
+            bias_initializer_0 = keras.initializers.RandomUniform(minval=-bias_size, maxval=bias_size, seed=None)
+            if layer_ndx==0:
+                model.add(keras.layers.Dense(n_units, activation=activation, input_shape = (1,n_inputs),
+                                             kernel_initializer=kernel_initializer_0,
+                                             bias_initializer=bias_initializer_0))
+            else:
+                model.add(keras.layers.Dense(n_units, activation=activation,
+                                             kernel_initializer=kernel_initializer_0,
+                                             bias_initializer=bias_initializer_0))
+    model.compile(loss=loss, optimizer=keras_optimizer)
+    return model, search_params, info
+
+
+
+
 def keras_mostly_linear_27(us, n_inputs:int):
     """ Maps cube onto model and search params """
     search_params = {'epochs':int(to_log_space_1d(us[0], low=50, high=5000)),
@@ -132,13 +196,14 @@ def keras_linear(us, n_inputs:int):
 
 
 
-KERAS_EMBEDDINGS = [keras_linear, keras_mostly_linear_27, keras_fast_swish_28, keras_deeper_swish_17]
+KERAS_EMBEDDINGS = [ keras_jiggly_7, keras_jiggly_10, keras_mostly_linear_27, keras_fast_swish_28, keras_deeper_swish_17]
 
 
 if __name__=='__main__':
     import numpy as np
-    x = np.random.randn(1000,1,160)
-    model, search_params, info = keras_fast_swish_28(us=list(np.random.rand(28,1)),n_inputs=160)
-    print(model.summary())
-    y = model(x)
-    print(np.shape(y))
+    for _ in range(10):
+        x = np.random.randn(1000,1,160)
+        model, search_params, info = keras_jiggly_7(us=list(np.random.rand(7,1)),n_inputs=160)
+        print(model.summary())
+        y = model(x)
+        print(np.shape(y))

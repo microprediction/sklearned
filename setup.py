@@ -24,7 +24,7 @@ setup(
     test_suite='pytest',
     tests_require=['pytest'],
     include_package_data=True,
-    install_requires=["wheel","pathlib"],
+    install_requires=["wheel","pathlib","keras","keras-tcn"],
     entry_points={
         "console_scripts": [
             "sklearned=sklearned.__main__:main",
