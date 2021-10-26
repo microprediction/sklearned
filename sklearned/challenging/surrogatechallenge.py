@@ -2,7 +2,7 @@ import numpy as np
 from tensorflow import keras
 from sklearned.challenging.surrogatedata import cached_skater_surrogate_data
 from sklearned.augment.affine import affine, jiggle
-from sklearned.challenging.surrogateio import read_model_champion_metrics, save_champion_metrics, save_champion_model,\
+from sklearned.challenging.surrogateio import read_champion_metrics, save_champion_metrics, save_champion_model,\
     save_champion_onnx, save_champion_weights, save_champion_info, save_champion_tensorflow
 from pprint import pprint
 import os
@@ -50,7 +50,7 @@ def challenge(model, skater_name: str, info:dict, epochs=200, jiggle_fraction=0.
     os.makedirs(CHAMPION_INFO_PATH, exist_ok=True)
 
     print('Champion data')
-    champion_metrics = read_model_champion_metrics(skater_name=skater_name, k=k, n_input=n_input)
+    champion_metrics = read_champion_metrics(skater_name=skater_name, k=k, n_input=n_input)
     pprint(champion_metrics)
 
     print('Surrogate data ')
