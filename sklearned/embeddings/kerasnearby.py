@@ -4,6 +4,11 @@ from sklearned.embeddings.optimizerembeddings import keras_optimizer_from_name
 from sklearned.embeddings.transforms import to_log_space_1d
 
 
+def keras_nearby_tsa_2(us:[float], n_input:int):
+    """ Varies learning_rate and jiggle_fraction """
+    return keras_nearby(us=us, n_input=n_input, skater_name='tsa_p2_d0_q1', k=1,  fixed_search_params=['epochs', 'patience'])
+
+
 def keras_nearby_quick_2(us:[float], n_input:int):
     """ Varies learning_rate and jiggle_fraction """
     return keras_nearby(us=us, n_input=n_input, skater_name='quick_aggressive_ema_ensemble', k=1,  fixed_search_params=['epochs', 'patience'])
@@ -55,7 +60,7 @@ def keras_nearby(us:[float], n_input:int, skater_name:str, k:int, fixed_search_p
 
 
 
-KERAS_NEARBY = [keras_nearby_quick_2, keras_nearby_quick_3]
+KERAS_NEARBY = [keras_nearby_quick_2, keras_nearby_quick_3,keras_nearby_tsa_2]
 
 
 
@@ -64,7 +69,7 @@ if __name__=='__main__':
     n_input = 160
     for _ in range(10):
         x = np.random.randn(1000,1,n_input)
-        model, search_params, info = keras_nearby_quick_2(us=list(np.random.rand(2,1)),n_input=n_input)
+        model, search_params, info = keras_nearby_tsa_2(us=list(np.random.rand(2,1)),n_input=n_input)
         print(model.summary())
         y = model(x)
         print(np.shape(y))

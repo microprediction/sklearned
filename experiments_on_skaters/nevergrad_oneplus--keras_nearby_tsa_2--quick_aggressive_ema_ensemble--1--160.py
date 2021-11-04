@@ -12,7 +12,7 @@ if __name__=='__main__':
     n_dim = this_file.split
     optimizer = optimizer_from_name(optimizer_name)
     print(optimizer.__name__)
-    n_trials = 50000
+    n_trials = 5000
     best_test, best_model, best_search_params = humpday_challenge(global_optimizer=optimizer, embedding_name=embedding_name, skater_name=skater_name, k=k, n_input=n_input, n_trials =n_trials)
     print(best_test)
     print(best_model.summary())
