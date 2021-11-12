@@ -15,3 +15,7 @@ Keras model ideas
 Add multiply layers 
 - https://keras.io/api/layers/merging_layers/multiply/
 - https://stackoverflow.com/questions/48309322/keras-multiply-layer-in-functional-api
+
+
+Miscellaneous
+- https://wandb.ai/covid/covid_forecast/reports/Transferring-Knowledge-on-Time-Series-with-the-Transformer--VmlldzoxNDEzOTk
