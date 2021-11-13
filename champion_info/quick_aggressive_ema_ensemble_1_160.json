@@ -1,1 +1,1 @@
-{"keras_optimizer": "Adamax", "learning_rate": 0.0003458527597849129, "global_optimizer": "nevergrad_oneplus_cube", "embedding_name": "keras_mostly_linear_27", "epochs": 5000, "patience": 6, "jiggle_fraction": 0.5958610832185453}
+{"keras_optimizer": "Adamax", "learning_rate": 0.0005098230105454623, "global_optimizer": "nevergrad_oneplus_cube", "embedding_name": "keras_jiggly_7", "epochs": 500, "patience": 6, "jiggle_fraction": 0.5}

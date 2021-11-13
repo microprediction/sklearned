@@ -1,6 +1,6 @@
 import keras_tuner as kt
 from tensorflow import keras, ones
-from sklearned.tasks.skatertasks import cached_surrogate_data
+from sklearned.challenging.surrogatedata import cached_skater_surrogate_data
 from pprint import pprint
 from functools import partial
 
@@ -35,14 +35,14 @@ def tunertrain(d, n_input, epochs):
         model.add(keras.layers.Dense(
             units=hp.Choice('units_0', [8, 16, 32, 64, 92, 128, 156, 256]),
             activation=hp.Choice('activation_0',
-                                 ['linear','relu','tanh','sigmoid','selu','elu','softsign']),
+                                 ['linear','relu','tanh','sigmoid','selu','elu','softsign','swish']),
             input_shape=(1, n_inputs),
             kernel_initializer=kernel_initializer_0,
             bias_initializer=bias_initializer_0))
         # Second layer
         model.add(keras.layers.Dense(
                         units = hp.Choice('units_1', [8,16,32,64]),
-                        activation=hp.Choice('activation_1',['linear','relu','tanh','sigmoid','selu','elu','softsign']) ))
+                        activation=hp.Choice('activation_1',['linear','relu','tanh','sigmoid','selu','elu','softsign','swish']) ))
         # Third layer
         model.add( keras.layers.Dense(
                         units=hp.Choice('units_2', [2,4,8,16,32]),
@@ -80,9 +80,10 @@ def summarize_model(d, model):
     return summary
 
 if __name__=='__main__':
-   n_inputs = 80
+   n_inputs = 60
    epochs = 500
-   d = cached_surrogate_data(fname='sk_theta', k=1, n_real=80, n_samples=150, n_warm=100, n_input=n_inputs)
+   d = cached_skater_surrogate_data(skater_name='thinking_slow_and_fast', k=1, n_samples=150, n_warm=100, n_input = n_inputs,
+                                       verbose = False, include_strs = None, exclude_str = '~')
    best_model = tunertrain(d=d,n_input=n_inputs, epochs=epochs)
    summary = summarize_model(d=d, model=best_model)
    ratio = summary['test_error'] / SLUGGISH_MOVING_AVERAGE_BEST['test_error']

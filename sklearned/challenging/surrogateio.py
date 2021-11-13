@@ -39,13 +39,22 @@ def champion_info_file(skater_name, k: int, n_input: int):
     return CHAMPION_INFO_PATH + os.path.sep + champion_stem(skater_name=skater_name, k=k, n_input=n_input) + '.json'
 
 
-def read_model_champion_metrics(**kwargs):
+def read_champion_metrics(**kwargs):
     try:
         with open(champion_metrics_file(**kwargs), 'r') as fp:
             metrics = json.load(fp)
     except FileNotFoundError:
         metrics = POOR_METRICS
     return metrics
+
+
+def read_champion_info(**kwargs):
+    try:
+        with open(champion_info_file(**kwargs), 'r') as fp:
+            info = json.load(fp)
+    except FileNotFoundError:
+        raise Exception('Cannot find info for '+champion_info_file(**kwargs))
+    return info
 
 
 def save_champion_metrics(metrics: dict, **kwargs):
@@ -83,6 +92,7 @@ def save_champion_onnx(model, **kwargs):
     onnx_model_as_byte_string = onnx_model.SerializeToString()
     with open(of, 'wb') as fp:
         fp.write(onnx_model_as_byte_string)
+
 
 
 def load_champion_model(**kwargs):

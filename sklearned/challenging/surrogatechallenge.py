@@ -2,7 +2,7 @@ import numpy as np
 from tensorflow import keras
 from sklearned.challenging.surrogatedata import cached_skater_surrogate_data
 from sklearned.augment.affine import affine, jiggle
-from sklearned.challenging.surrogateio import read_model_champion_metrics, save_champion_metrics, save_champion_model,\
+from sklearned.challenging.surrogateio import read_champion_metrics, save_champion_metrics, save_champion_model,\
     save_champion_onnx, save_champion_weights, save_champion_info, save_champion_tensorflow
 from pprint import pprint
 import os
@@ -50,7 +50,7 @@ def challenge(model, skater_name: str, info:dict, epochs=200, jiggle_fraction=0.
     os.makedirs(CHAMPION_INFO_PATH, exist_ok=True)
 
     print('Champion data')
-    champion_metrics = read_model_champion_metrics(skater_name=skater_name, k=k, n_input=n_input)
+    champion_metrics = read_champion_metrics(skater_name=skater_name, k=k, n_input=n_input)
     pprint(champion_metrics)
 
     print('Surrogate data ')
@@ -63,7 +63,7 @@ def challenge(model, skater_name: str, info:dict, epochs=200, jiggle_fraction=0.
 
     print('Training')
     callback = keras.callbacks.EarlyStopping(monitor='loss', patience=patience)
-    model.fit(x=jiggle_X, y=aug_y, epochs=epochs, verbose=verbose, callbacks=[callback])
+    model.fit(x=jiggle_X, y=aug_y, epochs=epochs, verbose=verbose, callbacks=[callback], use_multiprocessing=False, workers=1)
 
     y_test_hat = squeeze_out_middle( model(d['x_test']) )
     test_error = float(keras.metrics.mean_squared_error(y_test_hat[:, 0], d['y_test'][:, 0]))
