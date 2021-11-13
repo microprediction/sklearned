@@ -135,8 +135,8 @@ def keras_fast_swish_28(us, n_inputs:int):
 
 def keras_deeper_swish_17(us, n_inputs:int):
     """ Maps cube onto model and search params """
-    search_params = {'epochs':int(to_log_space_1d(us[0], low=50, high=20000)),
-                     'patience':int(to_log_space_1d(us[1], low=5, high=500)),
+    search_params = {'epochs':int(to_log_space_1d(us[0], low=10, high=100)),
+                     'patience':int(to_log_space_1d(us[1], low=1, high=10)),
                      'jiggle_fraction':us[2]**2}
 
     n_search_params = len(search_params)

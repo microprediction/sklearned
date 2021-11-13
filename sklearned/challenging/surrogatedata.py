@@ -10,7 +10,25 @@ live_data_memory = Memory(LIVE_DATA_CACHE)
 surrogate_data_memory = Memory(SURROGATE_DATA_CACHE)
 
 
-def get_multiple_streams(sub_sample=2, include_strs=None)->List[List[float]]:
+def deform(y,rho):
+    """
+        Make y easier to work with
+    """
+    yd = 0
+    y_deformed = [yd]
+    y_scale = abs(y[0])+1
+    y_prev = y[0]
+    for yi in y:
+        y_scale = (1-rho)*y_scale+rho*(abs(yi-y_prev)+1.0)
+        yd = yi/y_scale
+        yd = 0.95*yd+0.025*np.random.randn()
+        y_deformed.append(yd)
+    return y_deformed
+
+
+
+
+def get_multiple_streams(sub_sample=2, include_strs=None, n_reps=100)->List[List[float]]:
     """  """
     if include_strs is None:
         include_strs = ['hospital','electricity','airport','volume','emoji','three_body','helicopter','noaa']
@@ -26,11 +44,13 @@ def get_multiple_streams(sub_sample=2, include_strs=None)->List[List[float]]:
                 y_sub = y[::sub_sample]
             else:
                 y_sub = y
-            y_scale = np.mean([ abs(yi) for yi in y_sub[:100]])+1
+            # Create new stream where
+
             if len(y_sub)>=750:
-                y_scaled = [ yi/y_scale for yi in y_sub]
-                ys.append(y_scaled)
-                print(nm)
+                for _ in range(n_reps):
+                    rho = np.random.rand()*0.1
+                    y_scaled = deform(y_sub, rho=rho)
+                    ys.append(y_scaled)
             else:
                 print(nm+' too short')
         except:
@@ -129,12 +149,13 @@ cached_skater_surrogate_data = surrogate_data_memory.cache(skater_surrogate_data
 
 
 if __name__ == '__main__':
-    try:
-        import microprediction
-        import timemachines
-    except:
-        raise('pip install microprediction')
-    from timemachines.skaters.elo.eloensembles import elo_faster_residual_balanced_ensemble
-    d = cached_skater_surrogate_data(skater_name='precision_ema_ensemble', k=1,  n_warm=120, n_samples=50)
-
+    import numpy as np
+    y = list(np.cumsum(100*np.random.randn(500,1)))
+    import matplotlib.pyplot as plt
+    y1 = deform(y,0.025)
+    y2 = deform(y,0.025)
+    t = list(range(len(y1)))
+    plt.plot(t,y1,t,y2)
+    plt.grid()
+    plt.show()
 
