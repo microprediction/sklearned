@@ -35,7 +35,9 @@ def assess_and_maybe_save(model, info, d, champion_metrics, skater_name, k, n_in
 
     test_error_ratio = challenger_metrics['test_error'] / champion_metrics['test_error']
     pprint(challenger_metrics)
-    pprint('Test error ratio to champion is ' + str(test_error_ratio))
+    pprint('Test error ratio to champion is ' + str(test_error_ratio) )
+    if n_lags is not None:
+        print(' ... using '+str(n_lags)+' lags. ')
     if test_error_ratio < 0.95:
         print('You won the challenge ... saving new champion metrics, model, weights, onnx and search params')
         save_champion_metrics(metrics=challenger_metrics, skater_name=skater_name, k=k, n_input=n_input)

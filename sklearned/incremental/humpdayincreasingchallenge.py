@@ -64,6 +64,8 @@ def humpday_increasing_challenge(global_optimizer, embedding_name:str, skater_na
             # We use n_input in the surrogate data cache but n_lags are pulled out
             model, metrics, test_error_ratio = increasing_challenge(model=model, skater_name=skater_name, k=k, n_real=60, n_samples=150, n_warm=100, n_input=n_input, n_lags=n_lags,
                                                          with_metrics=True, verbose=1, info=info, **search_params)
+            metrics['n_lags']=n_lags
+            pprint(metrics)
             prev_weights = [ lyr.get_weights() for lyr in model.layers ]
             best_test_error_ratio = min(best_test_error_ratio, test_error_ratio)
 

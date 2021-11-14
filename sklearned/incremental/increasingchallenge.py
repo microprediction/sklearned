@@ -17,7 +17,7 @@ POOR_METRICS = {'test_error': DREADFUL,
 
 
 def increasing_challenge(model, skater_name: str, info: dict, n_lags, epochs=2, jiggle_fraction=0.1, symmetries=None,
-                  k=1, n_real=60, n_samples=150, n_warm=100, n_input=80, patience=50, with_metrics=False, verbose=2):
+                  k=1, n_real=60, n_samples=150, n_warm=100, n_input=80, patience=50, with_metrics=False, verbose=0):
 
     search_params = {'epochs' :epochs,
                      'patience' :patience,
