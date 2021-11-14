@@ -57,7 +57,7 @@ def challenge(model, skater_name: str, info:dict, epochs=200, jiggle_fraction=0.
     d = cached_skater_surrogate_data(skater_name=skater_name, k=k, n_samples=150, n_warm=290, n_input=n_input)
     d = remove_surrogate_outliers(d)
     if symmetries is None:
-        symmetries = [0.95, 0.975, 0.99, 1.0, 1.01, 1.025, 1.05]
+        symmetries = [0.995, 1.0, 1.001]
     aug_X, aug_y = affine(X=d['x_train'], y=d['y_train'], s=symmetries)
     jiggle_X = jiggle(aug_X, jiggle_fraction=jiggle_fraction)
 
@@ -65,34 +65,8 @@ def challenge(model, skater_name: str, info:dict, epochs=200, jiggle_fraction=0.
     callback = keras.callbacks.EarlyStopping(monitor='loss', patience=patience)
     model.fit(x=jiggle_X, y=aug_y, epochs=epochs, verbose=verbose, callbacks=[callback], use_multiprocessing=False, workers=1)
 
-    y_test_hat = squeeze_out_middle( model(d['x_test']) )
-    test_error = float(keras.metrics.mean_squared_error(y_test_hat[:, 0], d['y_test'][:, 0]))
-    y_val_hat = squeeze_out_middle( model(d['x_val']) )
-    val_error = float(keras.metrics.mean_squared_error(y_val_hat[:, 0], d['y_val'][:, 0]))
-    y_train_hat = squeeze_out_middle(model(d['x_train']))
-    train_error = float(keras.metrics.mean_squared_error(y_train_hat[:, 0], d['y_train'][:, 0]))
-
-    # Innovations relative to last value
-    dy_surrogate = list(y_test_hat[:, 0] - d['x_test'][:, 0, -1])
-    dy_model = list(d['y_test'][:, 0] - d['x_test'][:, 0, -1])
-    rho = np.corrcoef(x=dy_surrogate, y=dy_model)[0][1]
-
-    challenger_metrics = {"train_error": train_error / d['y_train_typical'],
-                          "val_error": val_error / d['y_val_typical'],
-                          "test_error": test_error / d['y_test_typical'],
-                          "rho": rho}
-
-    test_error_ratio = challenger_metrics['test_error'] / champion_metrics['test_error']
-    pprint(challenger_metrics)
-    pprint('Test error ratio to champion is ' + str(test_error_ratio))
-    if test_error_ratio < 0.95:
-        print('You won the challenge ... saving new champion metrics, model, weights, onnx and search params')
-        save_champion_metrics(metrics=challenger_metrics, skater_name=skater_name, k=k, n_input=n_input)
-        save_champion_model(model=model, skater_name=skater_name, k=k, n_input=n_input)
-        save_champion_weights(model=model, skater_name=skater_name, k=k, n_input=n_input)
-        save_champion_onnx(model=model, skater_name=skater_name, k=k, n_input=n_input)
-        save_champion_info(info=info, skater_name=skater_name, k=k, n_input=n_input)
-        save_champion_tensorflow(model=model, skater_name=skater_name,k=k,n_input=n_input)
+    from sklearned.challenging.savemaybe import assess_and_maybe_save
+    challenger_metrics, test_error_ratio = assess_and_maybe_save(model, info, d, champion_metrics, skater_name, k, n_input)
 
     if with_metrics:
         return model, challenger_metrics, test_error_ratio

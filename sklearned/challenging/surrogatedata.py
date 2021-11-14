@@ -48,7 +48,7 @@ def get_multiple_streams(sub_sample=2, include_strs=None, n_reps=100)->List[List
 
             if len(y_sub)>=750:
                 for _ in range(n_reps):
-                    rho = np.random.rand()*0.1
+                    rho = np.random.rand()*0.075+0.025
                     y_scaled = deform(y_sub, rho=rho)
                     ys.append(y_scaled)
             else:
