@@ -20,7 +20,7 @@ def pre_pad_zero(wghts, n_lags):
 
 
 
-def humpday_increasing_challenge(global_optimizer, embedding_name:str, skater_name: str, k: int, n_input: int, n_trials: int):
+def humpday_increasing_challenge(global_optimizer, embedding_name:str, skater_name: str, k: int, n_input: int, n_trials: int, verbose=1):
     """
         Search space of models, search and augmentation strategies
 
@@ -42,16 +42,25 @@ def humpday_increasing_challenge(global_optimizer, embedding_name:str, skater_na
     def objective(us: [float]) -> float:
         prev_weights = None
         best_test_error_ratio = 10000
-        for n_lags in [3,5,8,13,21,34,n_input]:
+        all_ratios = list()
+        all_lags = [3,4,5,8,10,13,16,21,25,34,n_input]
+        for n_lags in all_lags:
             model, user_search_params, info = embedding(us, n_lags)
+
             if prev_weights is not None:
                 # Warm start using previous weights
+                next_weights = list()
                 for i, prev_w in enumerate(prev_weights):
                     if i==0:
                         # Resize first layer
-                        model.layers[i].set_weights(pre_pad_zero(wghts=prev_w,n_lags=n_lags))
+                        next_weights.append(pre_pad_zero(wghts=prev_w,n_lags=n_lags))
+                        #model.layers[i].set_weights()
                     else:
-                        model.layers[i].set_weights(prev_w)
+                        next_weights.append(prev_w)
+                        #model.layers[i].set_weights(prev_w)
+            else:
+                next_weights = None
+
 
             info['global_optimizer'] = global_optimizer.__name__
             info['embedding_name']=embedding_name
@@ -62,12 +71,19 @@ def humpday_increasing_challenge(global_optimizer, embedding_name:str, skater_na
             search_params.update(user_search_params)
             pprint(search_params)
             # We use n_input in the surrogate data cache but n_lags are pulled out
-            model, metrics, test_error_ratio = increasing_challenge(model=model, skater_name=skater_name, k=k, n_real=60, n_samples=150, n_warm=100, n_input=n_input, n_lags=n_lags,
-                                                         with_metrics=True, verbose=1, info=info, **search_params)
+            model, metrics, test_error_ratio = increasing_challenge(model=model, skater_name=skater_name, k=k, n_real=60, n_samples=150,
+                                                                    n_warm=100, n_input=n_input, n_lags=n_lags,
+                                                                    next_weights=next_weights,
+                                                         with_metrics=True, verbose=verbose, info=info, **search_params)
             metrics['n_lags']=n_lags
             pprint(metrics)
             prev_weights = [ lyr.get_weights() for lyr in model.layers ]
             best_test_error_ratio = min(best_test_error_ratio, test_error_ratio)
+            all_ratios.append(test_error_ratio)
+
+        print(' ')
+        print('Here are the ratios...')
+        pprint({'all_lags':all_lags,'all_ratios':all_ratios})
 
         return best_test_error_ratio
 
