@@ -32,6 +32,8 @@ def assess_and_maybe_save(model, info, d, champion_metrics, skater_name, k, n_in
                           "val_error": val_error / d['y_val_typical'],
                           "test_error": test_error / d['y_test_typical'],
                           "rho": rho}
+    if n_lags is not None:
+        info['n_lags'] = n_lags
 
     test_error_ratio = challenger_metrics['test_error'] / champion_metrics['test_error']
     pprint(challenger_metrics)

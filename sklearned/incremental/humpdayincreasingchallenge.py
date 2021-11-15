@@ -42,7 +42,9 @@ def humpday_increasing_challenge(global_optimizer, embedding_name:str, skater_na
     def objective(us: [float]) -> float:
         prev_weights = None
         best_test_error_ratio = 10000
-        for n_lags in [3,5,8,13,21,34,n_input]:
+        for n_lags in [3,4,5,6,7,8,9,10,11,12,13,15,18,21,25,34,43,n_input]:
+            print('-----')
+            print('LAGS = '+str(n_lags))
             model, user_search_params, info = embedding(us, n_lags)
             if prev_weights is not None:
                 # Warm start using previous weights
