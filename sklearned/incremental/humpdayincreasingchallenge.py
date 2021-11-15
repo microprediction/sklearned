@@ -43,7 +43,7 @@ def humpday_increasing_challenge(global_optimizer, embedding_name:str, skater_na
         prev_weights = None
         best_test_error_ratio = 10000
         all_ratios = list()
-        all_lags = [3,4,5,8,10,13,16,21,25,34,n_input]
+        all_lags = [3,4,5,6,7,8,9,10,11,12,13,14,15,16,21,25,34,n_input]
         for n_lags in all_lags:
             model, user_search_params, info = embedding(us, n_lags)
 
@@ -67,7 +67,8 @@ def humpday_increasing_challenge(global_optimizer, embedding_name:str, skater_na
             info['n_lags']=n_lags
             print('  ')
             print(model.summary())
-            search_params = {'epochs':2,'patience':1,'jiggle_fraction':0.1,'symmetries':None}
+            print({'n_lages':n_lags})
+            search_params = {'epochs':10,'patience':2,'jiggle_fraction':0.1,'symmetries':None}
             search_params.update(user_search_params)
             pprint(search_params)
             # We use n_input in the surrogate data cache but n_lags are pulled out
