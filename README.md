@@ -17,3 +17,9 @@ Surrogate experiments
 
 The names of experiment files indicate choices made. 
 
+### M1
+Maybe..
+
+    brew install cmake protobuf
+    pip3 install --pre -i https://pypi.anaconda.org/scipy-wheels-nightly/simple numpy
+    pip3 install onnx
