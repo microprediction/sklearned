@@ -23,8 +23,11 @@ Maybe..
 
     brew install cmake protobuf
     pip3 install --pre -i https://pypi.anaconda.org/scipy-wheels-nightly/simple numpy
-    conda install -c apple tensorflow-deps 
-    python3 -m pip install --upgrade https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-1.12.0-py3-none-any.whl
+    conda install -c apple tensorflow-deps
+    pip install tensorflow-macos
     pip3 install onnx
+    
+There might be a really screwed up mess with protobuf. You might have to use the builder.py file from a different version. See
+[this stack overflow question](https://stackoverflow.com/questions/71759248/importerror-cannot-import-name-builder-from-google-protobuf-internal)
    
 
