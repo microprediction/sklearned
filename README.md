@@ -19,7 +19,12 @@ The names of experiment files indicate choices made.
 
 ### M1
 Maybe..
+    
 
     brew install cmake protobuf
     pip3 install --pre -i https://pypi.anaconda.org/scipy-wheels-nightly/simple numpy
+    conda install -c apple tensorflow-deps 
+    python3 -m pip install --upgrade https://storage.googleapis.com/tensorflow/mac/cpu/tensorflow-1.12.0-py3-none-any.whl
     pip3 install onnx
+   
+
